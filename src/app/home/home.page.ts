@@ -7,6 +7,7 @@ import { ForegroundService } from '@awesome-cordova-plugins/foreground-service/n
 import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 import { CrudService } from '../crud.service';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
+import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationEvents, BackgroundGeolocationResponse } from '@awesome-cordova-plugins/background-geolocation/ngx';
 
 export class Usuario{
   id?: string;
@@ -24,7 +25,7 @@ export class HomePage implements OnInit {
   usuarios: Usuario[]= [];
   usuario: Usuario;
   myInterval: any;
-  constructor(private geolocation: Geolocation,private backgroundMode: BackgroundMode, private locationAccuracy: LocationAccuracy, private toast: Toast,private vibration: Vibration,public foregroundService: ForegroundService, private crud: CrudService,
+  constructor(private backgroundGeolocation: BackgroundGeolocation, private geolocation: Geolocation,private backgroundMode: BackgroundMode, private locationAccuracy: LocationAccuracy, private toast: Toast,private vibration: Vibration,public foregroundService: ForegroundService, private crud: CrudService,
     public db: AngularFireDatabase) {
     this.backgroundMode.disableWebViewOptimizations();
    
@@ -45,7 +46,18 @@ export class HomePage implements OnInit {
       console.log(this.usuarios);
     })
   }
-  
+  create(){
+    this.crud.createNota(
+      {
+        Nombre:'', //this.usuario.Nombre,
+        Contrasena: '',
+        Ubicacion: ''
+      }
+    ).then(() => {
+      this.usuario = new Usuario;
+      this.getNotas();
+    });
+  }
   GPS(){
     
     this.geolocation.getCurrentPosition().then((resp) => {
@@ -53,6 +65,7 @@ export class HomePage implements OnInit {
       // resp.coords.longitude
       alert(resp.coords.latitude + " " + resp.coords.longitude);
       console.log(resp.coords.latitude + " " + resp.coords.longitude);
+      this.create();
      }).catch((error) => {
        console.log('Error getting location', error);
      });
@@ -79,12 +92,13 @@ export class HomePage implements OnInit {
     );
     
   }
-  ID(){
-  }
+
 
   vibra(){
-    this.vibration.vibrate([2000,1000,2000]);
+    console.log("Vibrando")
+    this.vibration.vibrate(100);
   }
+  
   startService() {
     // Notification importance is optional, the default is 1 - Low (no sound or vibration)
     this.foregroundService.start('GPS Running', 'Background Service', 'drawable/fsicon');
