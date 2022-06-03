@@ -7,14 +7,22 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+  <ion-button (click)="GPS()" expand="block" fill="clear" shape="round">
+    Geolocation
+  </ion-button>
+  <ion-button (click)="location()" expand="block" fill="clear" shape="round">
+    Acurate location
+  </ion-button>
+  <ion-button (click)="toasty()" expand="block" fill="clear" shape="round">
+    Toast
+  </ion-button>
+  <ion-button (click)="vibra()" expand="block" fill="clear" shape="round">
+    vibra
+  </ion-button>
+  <ion-button (click)="Activate()" expand="block" fill="clear" shape="round">
+    Activate
+  </ion-button>
+  <ion-button (click)="Deactivate()" expand="block" fill="clear" shape="round">
+    Deactivate
+  </ion-button>
 </ion-content>
