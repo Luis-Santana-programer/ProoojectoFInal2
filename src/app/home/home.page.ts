@@ -8,6 +8,13 @@ import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 import { CrudService } from '../crud.service';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationEvents, BackgroundGeolocationResponse } from '@awesome-cordova-plugins/background-geolocation/ngx';
+const config: BackgroundGeolocationConfig = {
+  desiredAccuracy: 10,
+  stationaryRadius: 20,
+  distanceFilter: 30,
+  debug: true, //  enable this hear sounds for background-geolocation life-cycle.
+  stopOnTerminate: false, // enable this to clear background location settings when the app terminates
+};
 
 export class Usuario{
   id?: string;
@@ -34,6 +41,20 @@ export class HomePage implements OnInit {
   }
   ngOnInit(){
     this.getNotas();
+    this.backgroundGeolocation.configure(config)
+  .then(() => {
+
+    this.backgroundGeolocation.on(BackgroundGeolocationEvents.location).subscribe((location: BackgroundGeolocationResponse) => {
+      console.log(location);
+      this.myInterval = setInterval(()=>this.GPS(),10000)
+      // IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
+      // and the background-task may be completed.  You must do this regardless if your operations are successful or not.
+      // IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
+      this.backgroundGeolocation.finish(); // FOR IOS ONLY
+    });
+
+  });
+
   }
   getNotas(){
     this.crud.getNotas().subscribe(result => {
@@ -102,32 +123,24 @@ export class HomePage implements OnInit {
   startService() {
     // Notification importance is optional, the default is 1 - Low (no sound or vibration)
     this.foregroundService.start('GPS Running', 'Background Service', 'drawable/fsicon');
+
    }
+
    stopService() {
     // Disable the foreground service
     this.foregroundService.stop();
    }
    
   Activate(){
-    
     this.startService();
-        this.backgroundMode.on('enable').subscribe(result=>{
-          this.backgroundMode.disableWebViewOptimizations();
-      this.myInterval = setInterval(()=>this.GPS(),10000)
-      alert("test");
-    })
-    this.backgroundMode.enable();
-    
-
-    
-    
-     
+      this.backgroundGeolocation.start();
   }
 
 
   Deactivate(){
     this.stopService();
-    this.backgroundMode.disable();
     clearInterval(this.myInterval);
+    this.backgroundGeolocation.stop();
+
   }
 }
