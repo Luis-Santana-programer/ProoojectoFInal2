@@ -8,6 +8,7 @@ import { BackgroundMode } from '@awesome-cordova-plugins/background-mode/ngx';
 import { CrudService } from '../crud.service';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationEvents, BackgroundGeolocationResponse } from '@awesome-cordova-plugins/background-geolocation/ngx';
+import { identity } from 'rxjs';
 const config: BackgroundGeolocationConfig = {
   desiredAccuracy: 10,
   stationaryRadius: 20,
@@ -31,19 +32,21 @@ export class Usuario{
 export class HomePage implements OnInit {
   usuarios: Usuario[]= [];
   usuario: Usuario;
+  nuestrousuario: Usuario;
   myInterval: any;
+  iniciado: boolean=false;
+  nombre: string;
+  Contrasena: string;
+
   constructor(private backgroundGeolocation: BackgroundGeolocation, private geolocation: Geolocation,private backgroundMode: BackgroundMode, private locationAccuracy: LocationAccuracy, private toast: Toast,private vibration: Vibration,public foregroundService: ForegroundService, private crud: CrudService,
     public db: AngularFireDatabase) {
     this.backgroundMode.disableWebViewOptimizations();
-   
-
-    
   }
+
   ngOnInit(){
     this.getNotas();
     this.backgroundGeolocation.configure(config)
   .then(() => {
-
     this.backgroundGeolocation.on(BackgroundGeolocationEvents.location).subscribe((location: BackgroundGeolocationResponse) => {
       console.log(location);
       this.myInterval = setInterval(()=>this.GPS(),10000)
@@ -54,8 +57,40 @@ export class HomePage implements OnInit {
     });
 
   });
-
   }
+  
+  inicio(){
+    this.getNotas();
+    for(let i=0; i<this.usuarios.length ;i++ ){
+      if(this.usuarios[i].Nombre==this.nombre && this.usuarios[i].Contrasena==this.Contrasena){
+      this.iniciado=true
+      this.nuestrousuario=this.usuarios[i];
+      }
+    }
+
+    if(this.iniciado==true){
+      this.toast.show(`Bienvenido`, '5000', 'center').subscribe(
+        toast => {
+          console.log(toast);
+        }
+      );
+    }
+  }
+
+  crear(){
+    this.crud.createNota(
+      {
+        Nombre: this.nombre,
+        Contrasena: this.Contrasena,
+        Ubicacion: ''
+      }
+    ).then(() => {
+      this.usuario = new Usuario;
+      this.getNotas();
+      this.inicio();
+    });
+  }
+
   getNotas(){
     this.crud.getNotas().subscribe(result => {
       this.usuarios=result.map(n => {
@@ -67,18 +102,6 @@ export class HomePage implements OnInit {
       console.log(this.usuarios);
     })
   }
-  create(){
-    this.crud.createNota(
-      {
-        Nombre:'', //this.usuario.Nombre,
-        Contrasena: '',
-        Ubicacion: ''
-      }
-    ).then(() => {
-      this.usuario = new Usuario;
-      this.getNotas();
-    });
-  }
   GPS(){
     
     this.geolocation.getCurrentPosition().then((resp) => {
@@ -86,7 +109,7 @@ export class HomePage implements OnInit {
       // resp.coords.longitude
       alert(resp.coords.latitude + " " + resp.coords.longitude);
       console.log(resp.coords.latitude + " " + resp.coords.longitude);
-      this.create();
+      //this.create();
      }).catch((error) => {
        console.log('Error getting location', error);
      });
