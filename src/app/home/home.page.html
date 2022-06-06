@@ -11,10 +11,10 @@
     <ion-input type="text" placeholder="Username" [(ngModel)]="nombre"></ion-input>
     <ion-input type="password" placeholder="Pasword" [(ngModel)]="Contrasena"></ion-input>
     <ion-button (click)="inicio()" expand="block" fill="clear" shape="round">
-      Inicia Seccion
+      Inicia Sesion
     </ion-button>
     <ion-button (click)="crear()" expand="block" fill="clear" shape="round">
-      Crea Seccion
+      Crear Usuario
     </ion-button>
   </div>
 
@@ -24,6 +24,9 @@
     </ion-button>
     <ion-button (click)="location()" expand="block" fill="clear" shape="round">
       Acurate location
+    </ion-button>
+    <ion-button (click)="actualizar()" expand="block" fill="clear" shape="round">
+      Actualizar ubicacion
     </ion-button>
     <ion-button (click)="toasty()" expand="block" fill="clear" shape="round">
       Toast

@@ -37,6 +37,7 @@ export class HomePage implements OnInit {
   iniciado: boolean=false;
   nombre: string;
   Contrasena: string;
+  ubicacion: string;
 
   constructor(private backgroundGeolocation: BackgroundGeolocation, private geolocation: Geolocation,private backgroundMode: BackgroundMode, private locationAccuracy: LocationAccuracy, private toast: Toast,private vibration: Vibration,public foregroundService: ForegroundService, private crud: CrudService,
     public db: AngularFireDatabase) {
@@ -113,6 +114,30 @@ export class HomePage implements OnInit {
      }).catch((error) => {
        console.log('Error getting location', error);
      });
+  }
+
+  actualizar(){
+    this.geolocation.getCurrentPosition().then((resp) => {
+      // resp.coords.latitude
+      // resp.coords.longitude
+      alert(resp.coords.latitude + " " + resp.coords.longitude);
+      console.log(resp.coords.latitude + " " + resp.coords.longitude);
+      this.ubicacion=resp.coords.latitude + " " + resp.coords.longitude;
+      this.nuestrousuario.Ubicacion=this.ubicacion;
+      this.edit(this.nuestrousuario.id, this.nuestrousuario);
+      //this.create();
+     }).catch((error) => {
+       console.log('Error getting location', error);
+     });
+    
+  }
+  edit(id:any, usuario: Usuario){
+    this.crud.updateNotas(id, {
+      Nombre: usuario.Nombre,
+      Contrasena: usuario.Contrasena,
+      Ubicacion: usuario.Ubicacion}).then(()=> {
+      this.getNotas();
+    })
   }
 
   location(){
