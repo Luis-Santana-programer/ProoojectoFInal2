@@ -9,6 +9,9 @@ import { CrudService } from '../crud.service';
 import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationEvents, BackgroundGeolocationResponse } from '@awesome-cordova-plugins/background-geolocation/ngx';
 import { identity } from 'rxjs';
+import { ModalController } from '@ionic/angular';
+import { BuscadorPage } from '../buscador/buscador.page';
+
 const config: BackgroundGeolocationConfig = {
   desiredAccuracy: 10,
   stationaryRadius: 20,
@@ -38,8 +41,9 @@ export class HomePage implements OnInit {
   nombre: string;
   Contrasena: string;
   ubicacion: string;
-
-  constructor(private backgroundGeolocation: BackgroundGeolocation, private geolocation: Geolocation,private backgroundMode: BackgroundMode, private locationAccuracy: LocationAccuracy, private toast: Toast,private vibration: Vibration,public foregroundService: ForegroundService, private crud: CrudService,
+  probando: boolean=false;
+  activado : boolean=false;
+  constructor(private backgroundGeolocation: BackgroundGeolocation,private modalController: ModalController, private geolocation: Geolocation,private backgroundMode: BackgroundMode, private locationAccuracy: LocationAccuracy, private toast: Toast,private vibration: Vibration,public foregroundService: ForegroundService, private crud: CrudService,
     public db: AngularFireDatabase) {
     this.backgroundMode.disableWebViewOptimizations();
   }
@@ -50,11 +54,8 @@ export class HomePage implements OnInit {
   .then(() => {
     this.backgroundGeolocation.on(BackgroundGeolocationEvents.location).subscribe((location: BackgroundGeolocationResponse) => {
       console.log(location);
-      this.myInterval = setInterval(()=>this.GPS(),10000)
-      // IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
-      // and the background-task may be completed.  You must do this regardless if your operations are successful or not.
-      // IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
-      this.backgroundGeolocation.finish(); // FOR IOS ONLY
+      this.myInterval = setInterval(()=>this.actualizar(),10000)
+      this.backgroundGeolocation.finish(); 
     });
 
   });
@@ -104,13 +105,15 @@ export class HomePage implements OnInit {
     })
   }
   GPS(){
-    
     this.geolocation.getCurrentPosition().then((resp) => {
-      // resp.coords.latitude
-      // resp.coords.longitude
-      alert(resp.coords.latitude + " " + resp.coords.longitude);
       console.log(resp.coords.latitude + " " + resp.coords.longitude);
       //this.create();
+      this.vibra();
+      this.toast.show('Activado, ubicacion actual: '+resp.coords.latitude + " " + resp.coords.longitude, '5000', 'center').subscribe(
+        toast => {
+          console.log(toast);
+        }
+      );
      }).catch((error) => {
        console.log('Error getting location', error);
      });
@@ -118,12 +121,9 @@ export class HomePage implements OnInit {
 
   actualizar(){
     this.geolocation.getCurrentPosition().then((resp) => {
-      // resp.coords.latitude
-      // resp.coords.longitude
-      alert(resp.coords.latitude + " " + resp.coords.longitude);
-      console.log(resp.coords.latitude + " " + resp.coords.longitude);
       this.ubicacion=resp.coords.latitude + " " + resp.coords.longitude;
       this.nuestrousuario.Ubicacion=this.ubicacion;
+      alert(this.nuestrousuario.Ubicacion);
       this.edit(this.nuestrousuario.id, this.nuestrousuario);
       //this.create();
      }).catch((error) => {
@@ -131,6 +131,7 @@ export class HomePage implements OnInit {
      });
     
   }
+  
   edit(id:any, usuario: Usuario){
     this.crud.updateNotas(id, {
       Nombre: usuario.Nombre,
@@ -180,15 +181,32 @@ export class HomePage implements OnInit {
    }
    
   Activate(){
+    this.activado=true;
     this.startService();
+    this.GPS();
+    this.location();
       this.backgroundGeolocation.start();
   }
 
 
   Deactivate(){
+    this.activado=false;
     this.stopService();
     clearInterval(this.myInterval);
+    this.myInterval = null;
+
     this.backgroundGeolocation.stop();
 
+  }
+
+
+  async modales(){
+    let info=this.nuestrousuario;
+
+    const modal = await this.modalController.create({
+        component: BuscadorPage,
+        componentProps: { info }
+    });
+    return await modal.present();
   }
 }

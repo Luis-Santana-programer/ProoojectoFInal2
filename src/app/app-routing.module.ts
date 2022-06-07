@@ -11,6 +11,10 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'buscador',
+    loadChildren: () => import('./buscador/buscador.module').then( m => m.BuscadorPageModule)
+  },
 ];
 
 @NgModule({

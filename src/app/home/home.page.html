@@ -16,9 +16,29 @@
     <ion-button (click)="crear()" expand="block" fill="clear" shape="round">
       Crear Usuario
     </ion-button>
+    
   </div>
 
+  
   <div *ngIf="iniciado==true">
+    <div *ngIf="activado==false">
+      <ion-button (click)="Activate()" expand="block" fill="clear" shape="round" color="alert">
+        Iniciar
+      </ion-button>
+    </div>
+    <div *ngIf="activado==true">
+      <ion-button (click)="Deactivate()" expand="block" fill="clear" shape="round" color="success">
+        Terminar
+      </ion-button>
+    </div>
+    <ion-tab-bar slot="bottom">
+      <ion-tab-button (click)="modales()">
+        <ion-icon name="camera"></ion-icon>
+        <ion-label>Buscar</ion-label>
+      </ion-tab-button>
+    </ion-tab-bar>
+  </div>
+  <div *ngIf="probando==true">
     <ion-button (click)="GPS()" expand="block" fill="clear" shape="round">
       Geolocation
     </ion-button>

@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="back()">Atrás</ion-button>
+    </ion-buttons>
+    <ion-title>Encuentra</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-item>
+      <ion-icon name="pin" slot="start"></ion-icon>
+      <ion-label>Your ID</ion-label>
+    </ion-item>
+    <ion-card-content>
+      {{yo.id}}
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Agrega ids</ion-card-title>
+    </ion-card-header>
+
+    <ion-input type="text" placeholder="ID"></ion-input>
+    <ion-button (click)="agregar()" expand="block" fill="clear" shape="round">
+      Agregar
+    </ion-button>
+  </ion-card>
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content>
+      
+    </ion-refresher-content>
+  </ion-refresher>
+</ion-content>
