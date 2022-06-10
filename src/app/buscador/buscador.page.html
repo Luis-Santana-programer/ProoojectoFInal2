@@ -3,14 +3,20 @@
     <ion-buttons slot="start">
       <ion-button (click)="back()">Atrás</ion-button>
     </ion-buttons>
-    <ion-title>Encuentra</ion-title>
+    <ion-title>Buscador</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content>
+    </ion-refresher-content>
+  </ion-refresher>
   <ion-card>
     <ion-item>
-      <ion-icon name="pin" slot="start"></ion-icon>
+      <ion-icon name="man-outline" slot="start"></ion-icon>
       <ion-label>Your ID</ion-label>
     </ion-item>
     <ion-card-content>
@@ -18,19 +24,27 @@
     </ion-card-content>
   </ion-card>
   <ion-card>
-    <ion-card-header>
-      <ion-card-title>Agrega ids</ion-card-title>
-    </ion-card-header>
+    <ion-item>
+      <ion-icon name="person-add-outline" slot="start"></ion-icon>
+      <ion-label>Agrega id</ion-label>
+    </ion-item>
 
-    <ion-input type="text" placeholder="ID"></ion-input>
+    <ion-input type="text" placeholder="ID" [(ngModel)]="id" ></ion-input>
     <ion-button (click)="agregar()" expand="block" fill="clear" shape="round">
       Agregar
     </ion-button>
   </ion-card>
-
-  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content>
-      
-    </ion-refresher-content>
-  </ion-refresher>
+  <div >
+    <ion-item *ngFor="let nota of personas" >
+      <ion-card style="display: flex; flex-direction: column; width: 100% !important; margin: 0 !important;">
+        <ion-item>
+          <ion-icon name="pin" slot="start"></ion-icon>
+          <ion-label>{{nota.ID}}</ion-label>
+        </ion-item>
+        <ion-card-content>
+          {{nota.ubicaccion}}
+        </ion-card-content>
+      </ion-card>
+    </ion-item>
+  </div>
 </ion-content>

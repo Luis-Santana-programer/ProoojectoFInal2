@@ -1,65 +1,46 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Blank
+    <ion-title *ngIf="iniciado==false">
+      Inicia Sesión
+    </ion-title>
+    <ion-title *ngIf="iniciado==true">
+      Activa ubicación
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div *ngIf="iniciado==false">
+  <span *ngIf="iniciado==false">
     <ion-input type="text" placeholder="Username" [(ngModel)]="nombre"></ion-input>
     <ion-input type="password" placeholder="Pasword" [(ngModel)]="Contrasena"></ion-input>
     <ion-button (click)="inicio()" expand="block" fill="clear" shape="round">
-      Inicia Sesion
+      Inicia Sesión
     </ion-button>
     <ion-button (click)="crear()" expand="block" fill="clear" shape="round">
       Crear Usuario
     </ion-button>
-    
-  </div>
+  </span>
 
   
-  <div *ngIf="iniciado==true">
-    <div *ngIf="activado==false">
-      <ion-button (click)="Activate()" expand="block" fill="clear" shape="round" color="alert">
-        Iniciar
+  <div *ngIf="iniciado==true" id="botton">
+    <span *ngIf="activado==false">
+      <ion-button (click)="Activate()" shape="circle" size="large" color="success">
+        Activar
       </ion-button>
-    </div>
-    <div *ngIf="activado==true">
-      <ion-button (click)="Deactivate()" expand="block" fill="clear" shape="round" color="success">
-        Terminar
+    </span>
+    <span *ngIf="activado==true">
+      <ion-button (click)="Deactivate()"  shape="circle" size="large" color="danger">
+        Desactivar
       </ion-button>
-    </div>
-    <ion-tab-bar slot="bottom">
-      <ion-tab-button (click)="modales()">
-        <ion-icon name="camera"></ion-icon>
-        <ion-label>Buscar</ion-label>
-      </ion-tab-button>
-    </ion-tab-bar>
+    </span>
   </div>
-  <div *ngIf="probando==true">
-    <ion-button (click)="GPS()" expand="block" fill="clear" shape="round">
-      Geolocation
-    </ion-button>
-    <ion-button (click)="location()" expand="block" fill="clear" shape="round">
-      Acurate location
-    </ion-button>
-    <ion-button (click)="actualizar()" expand="block" fill="clear" shape="round">
-      Actualizar ubicacion
-    </ion-button>
-    <ion-button (click)="toasty()" expand="block" fill="clear" shape="round">
-      Toast
-    </ion-button>
-    <ion-button (click)="vibra()" expand="block" fill="clear" shape="round">
-      vibra
-    </ion-button>
-    <ion-button (click)="Activate()" expand="block" fill="clear" shape="round">
-      Activate
-    </ion-button>
-    <ion-button (click)="Deactivate()" expand="block" fill="clear" shape="round">
-      Deactivate
-    </ion-button>
-  </div>
-  
 </ion-content>
+
+<span *ngIf="iniciado==true" id="fondo">
+  <ion-tab-bar slot="bottom" >
+    <ion-tab-button (click)="modales()">
+      <ion-icon name="locate-outline"></ion-icon>
+      <ion-label>Buscar</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</span>

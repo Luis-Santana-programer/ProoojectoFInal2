@@ -26,6 +26,7 @@
     "@awesome-cordova-plugins/foreground-service": "^5.43.0",
     "@awesome-cordova-plugins/geolocation": "^5.43.0",
     "@awesome-cordova-plugins/location-accuracy": "^5.43.0",
+    "@awesome-cordova-plugins/splash-screen": "^5.43.0",
     "@awesome-cordova-plugins/toast": "^5.43.0",
     "@awesome-cordova-plugins/touch-id": "^5.43.0",
     "@awesome-cordova-plugins/vibration": "^5.43.0",

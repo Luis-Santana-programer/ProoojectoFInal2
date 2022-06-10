@@ -16,6 +16,7 @@ import { environment } from '../environments/environment';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { BackgroundGeolocation } from '@awesome-cordova-plugins/background-geolocation/ngx';
+import { SplashScreen } from '@awesome-cordova-plugins/splash-screen/ngx';
 
 import { Vibration } from '@awesome-cordova-plugins/vibration/ngx';
 @NgModule({
@@ -23,7 +24,7 @@ import { Vibration } from '@awesome-cordova-plugins/vibration/ngx';
   entryComponents: [],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule,AngularFireModule.initializeApp(environment.config),
     AngularFireDatabaseModule,AngularFireAuthModule],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, BackgroundMode, Geolocation, LocationAccuracy,Toast,Vibration,ForegroundService,BackgroundGeolocation],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, BackgroundMode, Geolocation, LocationAccuracy,Toast,Vibration,ForegroundService,SplashScreen,BackgroundGeolocation],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

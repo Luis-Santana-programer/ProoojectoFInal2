@@ -11,12 +11,18 @@ import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocati
 import { identity } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 import { BuscadorPage } from '../buscador/buscador.page';
+import { SplashScreen } from '@awesome-cordova-plugins/splash-screen/ngx';
 
 const config: BackgroundGeolocationConfig = {
-  desiredAccuracy: 10,
-  stationaryRadius: 20,
-  distanceFilter: 30,
-  debug: true, //  enable this hear sounds for background-geolocation life-cycle.
+  desiredAccuracy: 2,
+  stationaryRadius: 2,
+  distanceFilter: 3,
+  notificationTitle: 'Background tracking',
+  notificationText: 'enabled',
+  debug: false,
+  interval: 10000,
+  fastestInterval: 5000,
+  activitiesInterval: 10000,
   stopOnTerminate: false, // enable this to clear background location settings when the app terminates
 };
 
@@ -25,7 +31,12 @@ export class Usuario{
   Nombre: string;
   Contrasena: string;
   Ubicacion: string;
+  ID: any;
 
+}
+export class persona{
+  ID:any;
+  ubicaccion:string;
 }
 @Component({
   selector: 'app-home',
@@ -44,23 +55,27 @@ export class HomePage implements OnInit {
   probando: boolean=false;
   activado : boolean=false;
   constructor(private backgroundGeolocation: BackgroundGeolocation,private modalController: ModalController, private geolocation: Geolocation,private backgroundMode: BackgroundMode, private locationAccuracy: LocationAccuracy, private toast: Toast,private vibration: Vibration,public foregroundService: ForegroundService, private crud: CrudService,
-    public db: AngularFireDatabase) {
+    public db: AngularFireDatabase,private splashScreen: SplashScreen) {
     this.backgroundMode.disableWebViewOptimizations();
   }
 
   ngOnInit(){
+    this.splashScreen.show();
     this.getNotas();
     this.backgroundGeolocation.configure(config)
   .then(() => {
     this.backgroundGeolocation.on(BackgroundGeolocationEvents.location).subscribe((location: BackgroundGeolocationResponse) => {
-      console.log(location);
-      this.myInterval = setInterval(()=>this.actualizar(),10000)
-      this.backgroundGeolocation.finish(); 
+      //alert(location.latitude+ " " +location.longitude);
+      this.nuestrousuario.Ubicacion=location.latitude+ " " +location.longitude;
+      this.edit(this.nuestrousuario.id, this.nuestrousuario);
+      console.log("firebase")
+      //this.myInterval = setInterval(()=>this.acualizar(location),10000)    
     });
-
   });
   }
-  
+  ionViewWillEnter(){
+    this.splashScreen.hide();
+  }
   inicio(){
     this.getNotas();
     for(let i=0; i<this.usuarios.length ;i++ ){
@@ -76,6 +91,12 @@ export class HomePage implements OnInit {
           console.log(toast);
         }
       );
+    }else{
+      this.toast.show(`Usuario o contraseña incorrecto`, '5000', 'center').subscribe(
+        toast => {
+          console.log(toast);
+        }
+      );
     }
   }
 
@@ -84,7 +105,8 @@ export class HomePage implements OnInit {
       {
         Nombre: this.nombre,
         Contrasena: this.Contrasena,
-        Ubicacion: ''
+        Ubicacion: '',
+        ID: []
       }
     ).then(() => {
       this.usuario = new Usuario;
@@ -114,29 +136,41 @@ export class HomePage implements OnInit {
           console.log(toast);
         }
       );
+      this.ubicacion=resp.coords.latitude + " " + resp.coords.longitude;
+      this.nuestrousuario.Ubicacion=this.ubicacion;
+      //alert(this.nuestrousuario.Ubicacion);
+      this.edit(this.nuestrousuario.id, this.nuestrousuario);
      }).catch((error) => {
        console.log('Error getting location', error);
      });
   }
 
-  actualizar(){
-    this.geolocation.getCurrentPosition().then((resp) => {
-      this.ubicacion=resp.coords.latitude + " " + resp.coords.longitude;
-      this.nuestrousuario.Ubicacion=this.ubicacion;
-      alert(this.nuestrousuario.Ubicacion);
-      this.edit(this.nuestrousuario.id, this.nuestrousuario);
-      //this.create();
-     }).catch((error) => {
-       console.log('Error getting location', error);
-     });
+  // actualizar(){
+  //   this.geolocation.getCurrentPosition().then((resp) => {
+  //     this.ubicacion=resp.coords.latitude + " " + resp.coords.longitude;
+  //     this.nuestrousuario.Ubicacion=this.ubicacion;
+  //     alert(this.nuestrousuario.Ubicacion);
+  //     this.edit(this.nuestrousuario.id, this.nuestrousuario);
+  //     //this.create();
+  //    }).catch((error) => {
+  //      console.log('Error getting location', error);
+  //    });
     
+  // }
+
+  acualizar(ubicaccion: any){
+      this.nuestrousuario.Ubicacion=ubicaccion;
+      //alert(this.nuestrousuario.Ubicacion);
+           //this.edit(this.nuestrousuario.id, this.nuestrousuario);
   }
   
   edit(id:any, usuario: Usuario){
     this.crud.updateNotas(id, {
       Nombre: usuario.Nombre,
       Contrasena: usuario.Contrasena,
-      Ubicacion: usuario.Ubicacion}).then(()=> {
+      Ubicacion: usuario.Ubicacion,
+      ID: usuario.ID
+    }).then(()=> {
       this.getNotas();
     })
   }
@@ -182,7 +216,7 @@ export class HomePage implements OnInit {
    
   Activate(){
     this.activado=true;
-    this.startService();
+    //this.startService();
     this.GPS();
     this.location();
       this.backgroundGeolocation.start();
@@ -191,9 +225,9 @@ export class HomePage implements OnInit {
 
   Deactivate(){
     this.activado=false;
-    this.stopService();
-    clearInterval(this.myInterval);
-    this.myInterval = null;
+   // this.stopService();
+    //clearInterval(this.myInterval);
+    //this.myInterval = null;
 
     this.backgroundGeolocation.stop();
 

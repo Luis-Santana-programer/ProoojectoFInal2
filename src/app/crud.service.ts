@@ -5,6 +5,7 @@ export class Usuario{
   Nombre: string;
   Contrasena: string;
   Ubicacion: string;
+  ID: any;
 
 }
 
